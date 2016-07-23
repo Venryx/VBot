@@ -1,4 +1,5 @@
 var g = global;
+var window = g;
 
 g.Log = console.log;
 
@@ -25,3 +26,30 @@ g.IsDouble = function(obj) { return typeof obj == "number" && parseFloat(obj) !=
 function ToJSON(obj) { return JSON.stringify(obj); }*/
 g.FromJSON = JSON.parse;
 g.ToJSON = JSON.stringify;
+
+// timers
+// ==========
+
+// interval is in seconds (can be decimal)
+g.Timer = function(interval, func, /*o:*/ maxCallCount) {
+	maxCallCount = maxCallCount != null ? maxCallCount : -1;
+
+	var s = this;
+	s.timerID = -1;
+	s.callCount = 0;
+	s.Start = function() {
+		s.timerID = setInterval(function() {
+			func();
+			s.callCount++;
+			if (maxCallCount != -1 && s.callCount >= maxCallCount)
+				s.Stop();
+		}, interval * 1000);
+	};
+	s.Stop = function() {
+		clearInterval(s.timerID);
+		s.timerID = -1;
+	};
+}
+Timer.SetAsBaseClassFor = function TimerMS(interval_decimal, func, /*o:*/ maxCallCount) {
+	var s = this.CallBaseConstructor(interval_decimal / 1000, func, maxCallCount);
+};

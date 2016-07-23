@@ -1,3 +1,6 @@
+var g = global;
+var window = g;
+
 // Object: base
 // ==================
 
@@ -144,3 +147,152 @@ String.prototype._AddFunction_Inline = function splitByAny() {
 
 	return this.split(splitStr);
 };
+
+// Array
+// ==========
+
+Array.prototype._AddFunction_Inline = function Contains(str) { return this.indexOf(str) != -1; };
+Array.prototype._AddFunction_Inline = function Indexes()
+{
+	var result = {};
+	for (var i = 0; i < this.length; i++)
+		result[i] = null; //this[i]; //null;
+	return result;
+};
+Array.prototype._AddFunction_Inline = function Strings() // not recommended, because it doesn't allow for duplicates
+{
+	var result = {};
+	for (var key in this)
+		if (this.hasOwnProperty(key))
+			result[this[key]] = null;
+	return result;
+};
+
+Array.prototype._AddFunction_Inline = function Add(item) { return this.push(item); };
+Array.prototype._AddFunction_Inline = function CAdd(item) { this.push(item); return this; }; // CAdd = ChainAdd
+Array.prototype._AddFunction_Inline = function TAdd(item) { this.push(item); return item; }; // TAdd = TransparentAdd
+Array.prototype._AddFunction_Inline = function AddRange(array)
+{
+	for (var i in array)
+		this.push(array[i]);
+};
+Array.prototype._AddFunction_Inline = function Remove(item)
+{
+	/*for (var i = 0; i < this.length; i++)
+		if (this[i] === item)
+			return this.splice(i, 1);*/
+	var itemIndex = this.indexOf(item);
+	this.splice(itemIndex, 1);
+};
+Array.prototype._AddFunction_Inline = function RemoveAt(index) { return this.splice(index, 1); };
+Array.prototype._AddFunction_Inline = function Insert(index, obj) { this.splice(index, 0, obj); }
+
+Object.prototype._AddFunction_Inline = function AsRef() { return new NodeReference_ByPath(this); }
+
+// Linq replacements
+// ----------
+
+Array.prototype._AddFunction_Inline = function Any(matchFunc)
+{
+    for (var i in this.Indexes())
+        if (matchFunc.call(this[i], this[i]))
+            return true;
+    return false;
+};
+Array.prototype._AddFunction_Inline = function All(matchFunc)
+{
+    for (var i in this.Indexes())
+        if (!matchFunc.call(this[i], this[i]))
+            return false;
+    return true;
+};
+Array.prototype._AddFunction_Inline = function Where(matchFunc)
+{
+	var result = [];
+	for (var i in this)
+		if (matchFunc.call(this[i], this[i])) // call, having the item be "this", as well as the first argument
+			result.push(this[i]);
+	return result;
+};
+Array.prototype._AddFunction_Inline = function Select(selectFunc)
+{
+	var result = [];
+	//for (var i in this)
+	for (var i in this) // need this for VDF List's, which also use this function (since they derive from the Array class)
+		result.Add(selectFunc.call(this[i], this[i]));
+	return result;
+};
+//Array.prototype._AddFunction_Inline = function Count(matchFunc) { return this.Where(matchFunc).length; };
+//Array.prototype._AddFunction_Inline = function Count(matchFunc) { return this.Where(matchFunc).length; }; // needed for items to be added properly to custom classes that extend Array
+Array.prototype._AddGetter_Inline = function Count() { return this.length; }; // needed for items to be added properly to custom classes that extend Array
+Array.prototype._AddFunction_Inline = function VCount(matchFunc) { return this.Where(matchFunc).length; };
+/*Array.prototype._AddFunction_Inline = function Clear()
+{
+	while (this.length > 0)
+		this.pop();
+};*/
+Array.prototype._AddFunction_Inline = function First(matchFunc) { return this.Where(matchFunc || function() { return true; })[0]; };
+//Array.prototype._AddFunction_Inline = function FirstWithPropValue(propName, propValue) { return this.Where(function() { return this[propName] == propValue; })[0]; };
+Array.prototype._AddFunction_Inline = function FirstWith(propName, propValue) { return this.Where(function() { return this[propName] == propValue; })[0]; };
+Array.prototype._AddFunction_Inline = function Last() { return this[this.length - 1]; };
+Array.prototype._AddFunction_Inline = function XFromLast(x) { return this[(this.length - 1) - x]; };
+
+// since JS doesn't have basic 'foreach' system
+Array.prototype._AddFunction_Inline = function ForEach(func) {
+	for (var i in this)
+		func.call(this[i], this[i], i); // call, having the item be "this", as well as the first argument
+};
+
+Array.prototype._AddFunction_Inline = function Move(item, newIndex)
+{
+	var oldIndex = this.indexOf(item);
+	this.RemoveAt(oldIndex);
+	if (oldIndex < newIndex) // new-index is understood to be the position-in-list to move the item to, as seen before the item started being moved--so compensate for remove-from-old-position list modification
+		newIndex--;
+	this.Insert(newIndex, item);
+};
+
+Array.prototype._AddFunction_Inline = function ToList(itemType) { return List.apply(null, [itemType || "object"].concat(this)); }
+Array.prototype._AddFunction_Inline = function ToDictionary(keyFunc, valFunc)
+{
+	var result = new Dictionary();
+	for (var i in this)
+		result.Add(keyFunc(this[i]), valFunc(this[i]));
+	return result;
+}
+Array.prototype._AddFunction_Inline = function Skip(count)
+{
+	var result = [];
+	for (var i = count; i < this.length; i++)
+		result.push(this[i]);
+	return result;
+};
+Array.prototype._AddFunction_Inline = function Take(count)
+{
+	var result = [];
+	for (var i = 0; i < count && i < this.length; i++)
+		result.push(this[i]);
+	return result;
+};
+Array.prototype._AddFunction_Inline = function FindIndex(matchFunc)
+{
+	for (var i in this)
+		if (matchFunc.call(this[i], this[i])) // call, having the item be "this", as well as the first argument
+			return i;
+	return -1;
+};
+Array.prototype._AddFunction_Inline = function OrderBy(valFunc)
+{
+	var temp = this.ToList();
+	temp.sort(function(a, b) { return valFunc(a) - valFunc(b); });
+	return temp;
+};
+Array.prototype._AddFunction_Inline = function Distinct()
+{
+	var result = [];
+	for (var i in this)
+		if (!result.Contains(this[i]))
+			result.push(this[i]);
+	return result;
+};
+//Array.prototype._AddFunction_Inline = function JoinUsing(separator) { return this.join(separator);};

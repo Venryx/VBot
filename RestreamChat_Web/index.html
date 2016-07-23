@@ -1,0 +1,42 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta charset="utf-8" />
+        <link href="css/general.css" rel="stylesheet" type="text/css" />
+        <link href="css/simple.css" rel="stylesheet" type="text/css" id="theme" />
+		
+		<!-- custom -->
+		<link href="css/VOverrides.css" rel="stylesheet" type="text/css"/>
+		
+        <title>RestreamChat</title>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=2" />
+
+        <script src="js/jquery-1.11.3.min.js"></script>
+        <script type="text/javascript" src="js/json2html.js"></script>
+        <script type="text/javascript" src="js/jquery.json2html.js"></script>
+        <script type="text/javascript" src="js/jquery.cookie.js"></script>
+        <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+        <script type="text/javascript" src="js/chat.js"></script>
+    </head>
+
+<body>
+        <div id="chat"></div>
+        <div class="row statusbar" id="footerbar">
+            <div id="newmessagesticker">
+                Click here to read new messsages
+            </div>
+            <div id="counters"></div>
+        </div>
+
+        <div id="replybox">
+            <div id="replytext">
+                <textarea placeholder="Ctrl+Enter to send" id="messagetext"></textarea>            
+            </div>
+            <input id="sendbutton" name="sendbutton" value="Send" type="button" class="greenbutton"/>
+        </div>
+</body>
+</html>

@@ -1,0 +1,13 @@
+body {
+    background-color: rgba(0, 0, 0, .5) !important;
+    margin: 0px auto;
+    margin-right: -20px;
+    overflow: hidden;
+    /*font-size: 18px;*/
+    font-weight: bold;
+}
+.mc {
+	margin: 0px 0px 3px 0px !important;
+	width: initial;
+}
+.stickbottom { bottom: 0; }

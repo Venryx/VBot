@@ -1,1 +1,1 @@
-node Start.js
+nodemon Start.js & pause & Start.bat
