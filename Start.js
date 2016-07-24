@@ -29,10 +29,14 @@ var unityBridgeSocket;
 io.on("connection", function(socket) {
 	unityBridgeSocket = socket;
     Log("Unity 3D Connected");
-	/*if (socket.handshake.address != "127.0.0.1") {
-		Log("Disconnecting web-socket, since handshake-address is not localhost (127.0.0.1).");
+	//Log("Handshake address) " + (typeof socket.request.connection.remoteAddress));
+	//if (socket.handshake.address.address != "127.0.0.1") {
+	if (socket.request.connection.remoteAddress != "::ffff:127.0.0.1" || socket.handshake.address != "::ffff:127.0.0.1") {
+		Log("Disconnecting web-socket, since remote-address or handshake-address is not localhost (127.0.0.1).");
 		io.sockets.connected[socket.id].disconnect();
-	}*/
+	}
+
+	RunStartCommands();
 });
 
 /*client.on("connected", function(address, port) {
@@ -109,6 +113,10 @@ refreshRestreamMessages();
 // handles messages
 // ==========
 
+function RunStartCommands() {
+	HandleMessage("!race", "local");
+}
+
 function HandleMessage(message, user) {
 	Log("HandleMessage) " + message);
 
@@ -125,15 +133,18 @@ function HandleMessage(message, user) {
 	}
 	else if (message.startsWith("!move ")) {
 		var parts = message.split(' ').slice(1);
-		var argsValid = parts.length >= 2 && parts.length <= 3 && IsNumberStr(parts[0]) && IsNumberStr(parts[1]) && (parts[2] == null || IsNumberStr(parts[2]));
+		if (parts[0].endsWith("-"))
+			parts[0] = "-" + parts[0];
+
+		var argsValid = parts.length >= 1 && parts.length <= 2 && IsNumberStr(parts[0]) && (parts[1] == null || IsNumberStr(parts[1]));
 		if (!argsValid) {
-			client.whisper(user.username, "Invalid command. Format should be \"!move x y strength\", e.g: \"!move 50 70 1000\" [%]");
+			client.whisper(user.username, "Invalid command. Format should be \"!move angle strength\", e.g: \"!move 0 1000\" [%]");
+			//client.whisper(user.username, "Invalid command. Format should be \"!move angle\" or \"!move strength angle\", e.g: \"!move 0 1000\" [%]");
 			return;
 		}
 
-		var x = parseFloat(parts[0]);
-		var z = parseFloat(parts[1]);
-		var strength = parts.length >= 3 ? parseFloat(parts[2]) : 1000;
-		UnityBridge.CallMethod("PlayerJump", user.username, x, z, strength);
+		var angle = parseFloat(parts[0]);
+		var strength = parts.length >= 2 ? parseFloat(parts[1]) : 50;
+		UnityBridge.CallMethod("PlayerJump", user.username, angle, strength);
 	}
 }
