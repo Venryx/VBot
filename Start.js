@@ -24,6 +24,8 @@ var options = {
 var client = new tmi.client(options);
 client.connect();
 
+var localUser = {username: "local"};
+
 var io = require("socket.io")(1337);
 var unityBridgeSocket;
 io.on("connection", function(socket) {
@@ -35,6 +37,11 @@ io.on("connection", function(socket) {
 		Log("Disconnecting web-socket, since remote-address or handshake-address is not localhost (127.0.0.1).");
 		io.sockets.connected[socket.id].disconnect();
 	}
+
+	// listeners
+	socket.on("HandleMessage", function(message) {
+		HandleMessage(message, localUser);
+	});
 
 	RunStartCommands();
 });
@@ -114,8 +121,11 @@ refreshRestreamMessages();
 // ==========
 
 function RunStartCommands() {
-	HandleMessage("!race", "local");
+	//HandleMessage("!race", "local");
+	HandleMessage("!tower", localUser);
 }
+
+var currentGameType = null;
 
 function HandleMessage(message, user) {
 	Log("HandleMessage) " + message);
@@ -124,27 +134,48 @@ function HandleMessage(message, user) {
 	if (message.startsWith("!m "))
 		message = message.replace("!m ", "!move ");
 
-	if (message == "!race")
-		UnityBridge.CallMethod("StartNewRace");
-	else if (message.startsWith("!play")) {
-		var parts = message.split(' ').slice(1);
-		var emoji = parts[0] || "😒";
-		UnityBridge.CallMethod("AddPlayer", user.username, Encode(emoji));
+	// general
+
+	// race
+	if (message == "!race") {
+		UnityBridge.CallMethod("VO.main.race.MakeVisible");
+		UnityBridge.CallMethod("VO.main.race.StartNewMatch");
+		currentGameType = "race";
+	}
+	else if (message.startsWith("!play") && currentGameType == "race") {
+		var args = message.split(' ').slice(1);
+		var emoji = args[0] || "😒";
+		UnityBridge.CallMethod("VO.main.race.liveMatch.AddPlayer", user.username, Encode(emoji));
 	}
 	else if (message.startsWith("!move ")) {
-		var parts = message.split(' ').slice(1);
-		if (parts[0].endsWith("-"))
-			parts[0] = "-" + parts[0];
+		var args = message.split(' ').slice(1);
+		if (args[0].endsWith("-"))
+			args[0] = "-" + args[0];
 
-		var argsValid = parts.length >= 1 && parts.length <= 2 && IsNumberStr(parts[0]) && (parts[1] == null || IsNumberStr(parts[1]));
+		var argsValid = args.length >= 1 && args.length <= 2 && IsNumberStr(args[0]) && (args[1] == null || IsNumberStr(args[1]));
 		if (!argsValid) {
 			client.whisper(user.username, "Invalid command. Format should be \"!move angle strength\", e.g: \"!move 0 1000\" [%]");
 			//client.whisper(user.username, "Invalid command. Format should be \"!move angle\" or \"!move strength angle\", e.g: \"!move 0 1000\" [%]");
 			return;
 		}
 
-		var angle = parseFloat(parts[0]);
-		var strength = parts.length >= 2 ? parseFloat(parts[1]) : 50;
+		var angle = parseFloat(args[0]);
+		var strength = args.length >= 2 ? parseFloat(args[1]) : 50;
 		UnityBridge.CallMethod("PlayerJump", user.username, angle, strength);
+	}
+
+	// tower
+	else if (message == "!tower") {
+		UnityBridge.CallMethod("VO.main.tower.MakeVisible");
+		UnityBridge.CallMethod("VO.main.tower.StartNewMatch");
+		currentGameType = "tower";
+	}
+	else if (message.startsWith("!play") && currentGameType == "tower") {
+		UnityBridge.CallMethod("VO.main.tower.liveMatch.AddPlayer", user.username);
+	}
+	else if (message.startsWith("!break")) {
+		var args = message.split(' ').slice(1);
+		var blockNumber = parseInt(args[0]);
+		UnityBridge.CallMethod("VO.main.tower.liveMatch.Break", user.username, blockNumber);
 	}
 }

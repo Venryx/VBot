@@ -13,6 +13,8 @@ var config;
 
 var restreamHostURL = "http://localhost:5010?url=http://localhost:8080";
 
+var Log = console.log;
+
 try {
     $(document).ready(function () {
 
@@ -87,9 +89,9 @@ try {
                             };
                             $('#counters').empty();
                             for (var i = 0; i < json.chats.length; i++) {
-                                $('#counters').json2html(json.chats[i], transform);                                
+                                $('#counters').json2html(json.chats[i], transform);
                             }
-                            
+
                         }
 
                         setTimeout(function () {
@@ -158,7 +160,7 @@ try {
                                                         else if( $(elmessage).html().indexOf( ">" + clearNickname ) > -1)
                                                             $(elmessage).remove();
                                                     }
-													
+
 													$(elmessage).html($(elmessage).html() + $(elmessage).html());
                                                 });;
                                         }
@@ -222,7 +224,9 @@ try {
                         for (var i = 0; i < json.length; i++) {
 							if (json[i].Text.match(/^![a-z]/))
 								continue;
-							
+
+                            json[i].Text = json[i].Text.replace(/https?<img src="https:\/\/www.livecoding.tv\/static\/candy-chat\/img\/emoticons_hd\/Uncertain\.png" alt=":\/" \/>/g, "http:/");
+
 							json[i].ChatIconURL = json[i].ChatIconURL.replace("/RestreamChat;component", "");
                             $('#chat').json2html(json[i], transform);
                             lastMessageId = json[i].Id;
@@ -293,7 +297,7 @@ try {
                     }
 
                     applySettings();
-                 
+
                     setTimeout(function () {
                         refreshSettings();
                     }, interval);
@@ -331,7 +335,7 @@ function messageOutEffect( element )
     } else if ( outEffect === "size" ) {
         options = { to: { width: el.width, height: el.height } };
     }
-    
+
     var effect = outEffect;
     var nameParam = outEffect.split('-');
     if (nameParam.length > 1) {
@@ -472,7 +476,7 @@ function parseUrlOptions() {
     {
 		outEffect = getUrlParameter('outeffect');
     }
-    
+
 }
 function changeColorOpacity( color, opacity )
 {
@@ -498,7 +502,7 @@ function changeColorOpacity( color, opacity )
     }
     else {
         color = color.replace(/rgb\s*\(/, 'rgba(');
-        color = color.replace(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d|\.]+)/, '$1,$2,$3,' + opacity + ')');        
+        color = color.replace(/(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*([\d|\.]+)/, '$1,$2,$3,' + opacity + ')');
         color = color.replace(/\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/, '($1,$2,$3,' + opacity + ')');
         return color;
     }
