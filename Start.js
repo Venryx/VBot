@@ -42,6 +42,9 @@ io.on("connection", function(socket) {
 	socket.on("HandleMessage", function(message) {
 		HandleMessage(message, localUser);
 	});
+	socket.on("OnSetCurrentPlayer", function(playerName) {
+		client.whisper(playerName, "Your turn " + playerName + "!");
+	});
 
 	RunStartCommands();
 });
@@ -129,53 +132,83 @@ var currentGameType = null;
 
 function HandleMessage(message, user) {
 	Log("HandleMessage) " + message);
+	var messageLower = message.toLowerCase();
+	var username = user.username.replace(/\\/g, "");
+	var isAdmin = username == "local" || username == "venryx" || username == "Venryx";
 
 	// messages aliases
 	if (message.startsWith("!m "))
 		message = message.replace("!m ", "!move ");
 
 	// general
+	if (messageLower.startsWith("[as:") && isAdmin) {
+		var chatAsUsername = message.substring(message.indexOf(":") + 1, message.indexOf("]"));
+		var realMessage = message.substr(message.indexOf("]") + 1);
+		HandleMessage(realMessage, {username:chatAsUsername});
+	}
 
 	// race
-	if (message == "!race") {
+	else if (messageLower == "!race") {
 		UnityBridge.CallMethod("VO.main.race.MakeVisible");
 		UnityBridge.CallMethod("VO.main.race.StartNewMatch");
 		currentGameType = "race";
 	}
-	else if (message.startsWith("!play") && currentGameType == "race") {
+	else if (messageLower.startsWith("!play") && currentGameType == "race") {
 		var args = message.split(' ').slice(1);
 		var emoji = args[0] || "😒";
-		UnityBridge.CallMethod("VO.main.race.liveMatch.AddPlayer", user.username, Encode(emoji));
+		UnityBridge.CallMethod("VO.main.race.liveMatch.AddPlayer", username, Encode(emoji));
 	}
-	else if (message.startsWith("!move ")) {
+	else if (messageLower.startsWith("!move ")) {
 		var args = message.split(' ').slice(1);
 		if (args[0].endsWith("-"))
 			args[0] = "-" + args[0];
 
 		var argsValid = args.length >= 1 && args.length <= 2 && IsNumberStr(args[0]) && (args[1] == null || IsNumberStr(args[1]));
 		if (!argsValid) {
-			client.whisper(user.username, "Invalid command. Format should be \"!move angle strength\", e.g: \"!move 0 1000\" [%]");
-			//client.whisper(user.username, "Invalid command. Format should be \"!move angle\" or \"!move strength angle\", e.g: \"!move 0 1000\" [%]");
+			client.whisper(username, "Invalid command. Format should be \"!move angle strength\", e.g: \"!move 0 1000\" [%]");
+			//client.whisper(username, "Invalid command. Format should be \"!move angle\" or \"!move strength angle\", e.g: \"!move 0 1000\" [%]");
 			return;
 		}
 
 		var angle = parseFloat(args[0]);
 		var strength = args.length >= 2 ? parseFloat(args[1]) : 50;
-		UnityBridge.CallMethod("PlayerJump", user.username, angle, strength);
+		UnityBridge.CallMethod("PlayerJump", username, angle, strength);
 	}
 
 	// tower
-	else if (message == "!tower") {
+	else if (messageLower == "!tower" && isAdmin) {
 		UnityBridge.CallMethod("VO.main.tower.MakeVisible");
 		UnityBridge.CallMethod("VO.main.tower.StartNewMatch");
 		currentGameType = "tower";
 	}
-	else if (message.startsWith("!play") && currentGameType == "tower") {
-		UnityBridge.CallMethod("VO.main.tower.liveMatch.AddPlayer", user.username);
+	else if (messageLower.startsWith("!play") && currentGameType == "tower") {
+		UnityBridge.CallMethod("VO.main.tower.liveMatch.AddPlayer", username);
 	}
-	else if (message.startsWith("!break")) {
+	else if (messageLower.startsWith("!quit") && currentGameType == "tower") {
+		UnityBridge.CallMethod("VO.main.tower.liveMatch.Quit", username);
+	}
+	else if (messageLower.startsWith("!setplayer")) {
+		if (!(username == "venryx" || username == "Venryx")) return;
 		var args = message.split(' ').slice(1);
+		var player = args[0];
+		UnityBridge.CallMethod("VO.main.tower.liveMatch.SetCurrentPlayer_ByName", player);
+	}
+	else if (messageLower.startsWith("!skip")) {
+		if (!(username == "venryx" || username == "Venryx")) return;
+		UnityBridge.CallMethod("VO.main.tower.liveMatch.SkipCurrentPlayer");
+	}
+	else if (messageLower.startsWith("!break")) {
+		var args = message.split(' ').slice(1);
+		if (args.length != 1) return;
+		var blockNumber = args[0] != null ? parseInt(args[0]) : null;
+		UnityBridge.CallMethod("VO.main.tower.liveMatch.Break", username, blockNumber);
+	}
+	else if (messageLower.startsWith("!shrink")) {
+		var args = message.split(' ').slice(1);
+		if (args.length != 2) return;
 		var blockNumber = parseInt(args[0]);
-		UnityBridge.CallMethod("VO.main.tower.liveMatch.Break", user.username, blockNumber);
+		var shrinkToPercent_input = parseFloat(args[1]);
+		var shrinkToPercent = shrinkToPercent_input < 1 ? shrinkToPercent_input : shrinkToPercent_input / 100;
+		UnityBridge.CallMethod("VO.main.tower.liveMatch.Shrink", username, blockNumber, shrinkToPercent);
 	}
 }
