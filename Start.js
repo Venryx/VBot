@@ -200,7 +200,8 @@ function HandleMessage(message, user) {
 	else if (messageLower.startsWith("!break")) {
 		var args = message.split(' ').slice(1);
 		if (args.length != 1) return;
-		var blockNumber = args[0] != null ? parseInt(args[0]) : null;
+		if (!IsIntStr(args[0])) return;
+		var blockNumber = parseInt(args[0]);
 		UnityBridge.CallMethod("VO.main.tower.liveMatch.Break", username, blockNumber);
 	}
 	else if (messageLower.startsWith("!shrink")) {

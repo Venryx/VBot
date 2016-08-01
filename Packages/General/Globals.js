@@ -18,6 +18,11 @@ g.ToString = function(val) { return "" + val; }
 g.IsInt = function(obj) { return typeof obj == "number" && parseFloat(obj) == parseInt(obj); }
 g.IsDouble = function(obj) { return typeof obj == "number" && parseFloat(obj) != parseInt(obj); }
 
+//g.IsNumberStr = function(str) { return parseFloat(str) != NaN && str == "0" || parseInt(str) != 0; };
+g.IsNumberStr = function(str) { return parseFloat(str).toString() == str; };
+//g.IsFloatStr = function(str) { return parseFloat(str).toString() == str; };
+g.IsIntStr = function(str) { return parseInt(str).toString() == str; };
+
 // methods: serialization
 // ==========
 
@@ -29,6 +34,8 @@ g.ToJSON = JSON.stringify;
 
 // timers
 // ==========
+
+g.WaitXThenRun = function(waitTime, func) { setTimeout(func, waitTime); };
 
 // interval is in seconds (can be decimal)
 g.Timer = function(interval, func, /*o:*/ maxCallCount) {
