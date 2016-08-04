@@ -10,6 +10,10 @@ body {
 	margin: 0px 0px 3px 0px !important;
 	width: initial;
 }
+.mc > .m {
+	width: 100% !important;
+	overflow-wrap: break-word;
+}
 .stickbottom { bottom: 0; }
 
 /*Chat Icon*/
