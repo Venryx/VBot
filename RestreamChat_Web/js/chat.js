@@ -11,9 +11,10 @@ var outEffect = undefined;
 var messageLimit = 300;
 var config;
 
-var restreamHostURL = "http://localhost:5010?url=http://localhost:8080";
-
+// custom
 var Log = console.log;
+var restreamHostURL = "http://localhost:5010?url=http://localhost:8080";
+var escapeTags = true;
 
 try {
     $(document).ready(function () {
@@ -23,10 +24,10 @@ try {
         parseUrlOptions();
 
         $('#replybox').hide();
-        $('#chat').on('click', function (event) {
+        /*$('#chat').on('click', function (event) {
             if (event.target.id != 'replybox')
                 $('#replybox').toggle();
-        });
+        });*/
 
         $('#replybox').on('click', function (event) {
             if (event.target.id == 'replybox')
@@ -225,7 +226,16 @@ try {
 							if (json[i].Text.match(/^![a-z]/))
 								continue;
 
-                            json[i].Text = json[i].Text.replace(/https?<img src="https:\/\/www.livecoding.tv\/static\/candy-chat\/img\/emoticons_hd\/Uncertain\.png" alt=":\/" \/>/g, "http:/");
+							var text = json[i].Text;
+                            text = text.replace(/https?<img src="https:\/\/www.livecoding.tv\/static\/candy-chat\/img\/emoticons_hd\/Uncertain\.png" alt=":\/" \/>/g, "http:/");
+							if (escapeTags) {
+								//text = encodeURIComponent(text);
+								var tagsToReplace = {'&': '&amp;', '<': '&lt;', '>': '&gt;'};
+								function replaceTag(tag) { return tagsToReplace[tag] || tag; }
+								function safe_tags_replace(str) { return str.replace(/[&<>]/g, replaceTag); }
+								text = safe_tags_replace(text);
+							}
+							json[i].Text = text;
 
 							json[i].ChatIconURL = json[i].ChatIconURL.replace("/RestreamChat;component", "");
                             $('#chat').json2html(json[i], transform);
@@ -511,6 +521,3 @@ function changeColorOpacity( color, opacity )
 
 
 }
-
-
-
