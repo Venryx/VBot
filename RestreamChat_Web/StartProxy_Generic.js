@@ -2,6 +2,8 @@ var http = require('http');
 var url = require('url');
 var request = require('request');
 
+var Log = console.log;
+
 http.createServer(onRequest).listen(5010);
 
 function onRequest(req, res) {
@@ -13,7 +15,8 @@ function onRequest(req, res) {
 				origin: 'http://localhost:8080'
 			}*/
         }).on('error', function(e) {
-            res.end(e);
+			Log(e.toString());
+            res.end(e.toString());
         }).pipe(res);
 		res.setHeader("Access-Control-Allow-Origin", "*");
 		//res.setHeader("Access-Control-Allow-Origin", "http://localhost:5009");
