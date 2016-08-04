@@ -1,1 +1,1 @@
-http-server -a localhost -p 5009
+http-server -c-1 -a localhost -p 5009

@@ -232,8 +232,9 @@ try {
 								//text = encodeURIComponent(text);
 								var tagsToReplace = {'&': '&amp;', '<': '&lt;', '>': '&gt;'};
 								function replaceTag(tag) { return tagsToReplace[tag] || tag; }
-								function safe_tags_replace(str) { return str.replace(/[&<>]/g, replaceTag); }
-								text = safe_tags_replace(text);
+								//function safe_tags_replace(str) { return str.replace(/[&<>]/g, replaceTag); }
+								text = text.replace(/<(?!img src="http:\/\/static-cdn.jtvnw.net\/|img src="https:\/\/www.livecoding.tv\/)/g, "&lt;");
+								text = text.replace(/onload/g, "on load");
 							}
 							json[i].Text = text;
 
