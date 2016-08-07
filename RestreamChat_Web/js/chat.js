@@ -230,12 +230,17 @@ try {
                             text = text.replace(/https?<img src="https:\/\/www.livecoding.tv\/static\/candy-chat\/img\/emoticons_hd\/Uncertain\.png" alt=":\/" \/>/g, "http:/");
 							if (escapeTags) {
 								//text = encodeURIComponent(text);
-								var tagsToReplace = {'&': '&amp;', '<': '&lt;', '>': '&gt;'};
+								
+								/*var tagsToReplace = {'&': '&amp;', '<': '&lt;', '>': '&gt;'};
 								function replaceTag(tag) { return tagsToReplace[tag] || tag; }
-								//function safe_tags_replace(str) { return str.replace(/[&<>]/g, replaceTag); }
+								function safe_tags_replace(str) { return str.replace(/[&<>]/g, replaceTag); }*/
+								
+								// textify links (without tag stuff)
+								text = text.replace(/<a href="(.+?)"( title=".+?")?( target=".+?")?>(.+?)<\/a>/g, "$1");
+								
+								// textify any tags that aren't emoji-img's
 								text = text.replace(/<(?!img src="http:\/\/static-cdn.jtvnw.net\/|img src="https:\/\/www.livecoding.tv\/)/g, "&lt;");
 								text = text.replace(/onload/g, "on load").replace(/onerror/g, "on error");
-								// make-so: other script-runners are escaped
 							}
 							json[i].Text = text;
 
