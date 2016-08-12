@@ -238,8 +238,18 @@ try {
 								// textify links (without tag stuff)
 								text = text.replace(/<a href="(.+?)"( title=".+?")?( target=".+?")?>(.+?)<\/a>/g, "$1");
 								
+								// don't use emoticon cache for beam
+								text = text.replace(/<img src="\/chatemoticon\/cache\?ubx=([0-9]+)&uby=([0-9]+)&ubw=([0-9]+)&ubh=([0-9]+)&uburl=(.+?)".+?\/>/g,
+									function(str, x, y, width, height, imageURL, extra) {
+										width = parseInt(width) + 2;
+										height = parseInt(height) + 2;
+										return '<img src="/Resources/Transparent.png" style="background: url(' + decodeURIComponent(imageURL) + ') -' + x + 'px -' + y + 'px;" width="' + width + '" height="' + height + '"/>';
+									}
+								);
+								
 								// textify any tags that aren't emoji-img's
-								text = text.replace(/<(?!img src="http:\/\/static-cdn.jtvnw.net\/|img src="https:\/\/www.livecoding.tv\/)/g, "&lt;");
+								//text = text.replace(/<(?!img src="(http:\/\/static-cdn.jtvnw.net\/|https:\/\/www.livecoding.tv\/|\/chatemoticon\/cache\?))/g, "&lt;");
+								//text = text.replace(/<(?!img src="(http:\/\/static-cdn.jtvnw.net\/|https:\/\/www.livecoding.tv\/|https:\/\/beam.pro\/_latest\/emoticons\/))/g, "&lt;");
 								text = text.replace(/onload/g, "on load").replace(/onerror/g, "on error");
 							}
 							json[i].Text = text;
