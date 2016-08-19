@@ -1,14 +1,27 @@
+html {
+	height: 100%;
+	background-color: initial !important;
+}
+
 body {
-    background-color: rgba(0, 0, 0, .5) !important;
+    /*background-color: rgba(0, 0, 0, .5) !important;*/
+	background-color: initial !important;
     margin: 0px auto;
     margin-right: -20px;
     overflow: hidden;
     /*font-size: 18px;*/
     font-weight: bold;
 }
+
+#chat {
+	background-color: rgba(0, 0, 0, .5) !important;
+	border-radius: 10px 0 0 10px;
+}
+
 .mc {
 	margin: 0px 0px 3px 0px !important;
 	width: initial;
+	background-color: initial !important;
 }
 .mc > .m {
 	width: 100% !important;

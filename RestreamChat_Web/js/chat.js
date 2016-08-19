@@ -15,6 +15,8 @@ var config;
 var Log = console.log;
 var restreamHostURL = "http://localhost:5010?url=http://localhost:8080";
 var escapeTags = true;
+if (window.location.href.indexOf("nobg=1") == -1) // if in popup window (i.e. not in OBS), make background full-black
+	document.write("<style>body { background-color: black !important; }</style>");
 
 try {
     $(document).ready(function () {
