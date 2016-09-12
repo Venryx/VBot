@@ -251,7 +251,13 @@ try {
 								
 								// textify any tags that aren't emoji-img's
 								//text = text.replace(/<(?!img src="(http:\/\/static-cdn.jtvnw.net\/|https:\/\/www.livecoding.tv\/|\/chatemoticon\/cache\?))/g, "&lt;");
-								text = text.replace(/<(?!img src="(http:\/\/static-cdn.jtvnw.net\/|https:\/\/www.livecoding.tv\/|https:\/\/beam.pro\/_latest\/emoticons\/))/g, "&lt;");
+								var allowedURLStarts = [
+									"http:\/\/static-cdn.jtvnw.net\/",
+									"https:\/\/www.livecoding.tv\/",
+									"https:\/\/beam.pro\/_latest\/emoticons\/",
+									"/Resources/"
+								];
+								text = text.replace(new RegExp("<(?!img src=\"(" + allowedURLStarts.join("|") + "))", "g"), "&lt;");
 								text = text.replace(/onload/g, "on load").replace(/onerror/g, "on error");
 							}
 							json[i].Text = text;
