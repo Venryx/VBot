@@ -1,7 +1,7 @@
 # VBot
 Twitch chat bot built in NodeJS.
 
-Instructions
+Instructions (for Restream chat box)
 ==========
 1) Download and install NodeJS if you haven't already, from: http://nodejs.org  
 2) Download and install RestreamChat from: https://restream.io/chat  
