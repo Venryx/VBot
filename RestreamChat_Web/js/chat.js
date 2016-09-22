@@ -256,6 +256,7 @@ try {
 									"https://www.livecoding.tv/",
 									"https://beam.pro/_latest/emoticons/",
 									"http://edge.sf.hitbox.tv/static/img/chat/",
+									"http://cdn.betterttv.net/emote/",
 									"/Resources/"
 								];
 								text = text.replace(new RegExp("<(?!img src=\"(" + allowedURLStarts.join("|") + "))", "g"), "&lt;");
