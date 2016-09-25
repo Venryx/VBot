@@ -257,7 +257,8 @@ try {
 									"https://beam.pro/_latest/emoticons/",
 									"http://edge.sf.hitbox.tv/static/img/chat/",
 									"http://cdn.betterttv.net/emote/",
-									"/Resources/"
+									"/Resources/",
+									"/chatemoticon/cache?" // temp; unsafe, since any url could be entered at the end
 								];
 								text = text.replace(new RegExp("<(?!img src=\"(" + allowedURLStarts.join("|") + "))", "g"), "&lt;");
 								text = text.replace(/onload/g, "on load").replace(/onerror/g, "on error");
