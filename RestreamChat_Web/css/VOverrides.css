@@ -14,8 +14,9 @@ body {
 }
 
 #chat {
-	background-color: rgba(0, 0, 0, .5) !important;
-	border-radius: 10px 0 0 10px;
+	/*background-color: rgba(0, 0, 0, .5) !important;
+	border-radius: 10px 0 0 10px;*/
+	/*background-color: rgba(0,0,20,.7);*/
 }
 
 .mc {
