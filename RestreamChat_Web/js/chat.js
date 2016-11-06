@@ -252,11 +252,11 @@ try {
 								// textify any tags that aren't emoji-img's
 								//text = text.replace(/<(?!img src="(http:\/\/static-cdn.jtvnw.net\/|https:\/\/www.livecoding.tv\/|\/chatemoticon\/cache\?))/g, "&lt;");
 								var allowedURLStarts = [
-									"http://static-cdn.jtvnw.net/",
-									"https://www.livecoding.tv/",
-									"https://beam.pro/_latest/emoticons/",
-									"http://edge.sf.hitbox.tv/static/img/chat/",
-									"http://cdn.betterttv.net/emote/",
+									"https?://static-cdn.jtvnw.net/",
+									"https?://www.livecoding.tv/",
+									"https?://beam.pro/_latest/emoticons/",
+									"https?://edge.sf.hitbox.tv/static/img/chat/",
+									"https?://cdn.betterttv.net/emote/",
 									"/Resources/",
 									"/chatemoticon/cache?" // temp; unsafe, since any url could be entered at the end
 								];
